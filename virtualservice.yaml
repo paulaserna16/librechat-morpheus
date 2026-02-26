@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: librechat-csp
+  namespace: paula-test
+spec:
+  hosts:
+    - "librechat2.kubernetes.coe.local"
+  gateways:
+    - librechat-gateway
+  http:
+    - headers:
+        response:
+          set:
+            Content-Security-Policy: "frame-src 'self' https://*.codesandbox.io"
+      route:
+        - destination:
+            host: librechat-librechat
+            port:
+              number: 3080

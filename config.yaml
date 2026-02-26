@@ -1,0 +1,87 @@
+version: 1.2.8
+
+cache: true
+
+registration:
+  socialLogins: []
+  allowedDomains:
+    - "gmail.com"
+
+interface:
+  # MCP Servers UI configuration
+  customWelcome: "Welcome to HPE Hackathon!"
+
+  runCode: false
+  webSearch: false
+  fileSearch: false
+
+  marketplace:
+    use: false
+
+  mcpServers:
+    placeholder: "MCP Servers"
+    use: true
+    create: true
+    share: false
+    trustCheckbox:
+      label: "I trust this server"
+      subLabel: "Only enable servers you trust"
+
+  # Privacy policy settings
+  privacyPolicy:
+    externalUrl: "https://librechat.ai/privacy-policy"
+    openNewTab: true
+
+  # Terms of service
+  termsOfService:
+    externalUrl: "https://librechat.ai/tos"
+    openNewTab: true
+
+endpoints:
+  custom:
+    - name: "vLLM"
+      apiKey: "empty"
+      baseURL: "http://10.10.78.11:8079/v1"
+      models:
+        default: ["google/gemma-3-27b-it"]
+        fetch: true
+      titleConvo: true
+      titleModel: "current_model"
+      titleMessageRole: "user"
+      summarize: false
+      summaryModel: "current_model"
+      forcePrompt: false
+  agents:
+    recursionLimit: 10
+    maxRecursionLimit: 20
+    disableBuilder: false
+    capabilities: ["artifacts", "context", "chain"]
+
+fileConfig:
+  endpoints:
+    assistants:
+      fileLimit: 2
+      fileSizeLimit: 10
+      totalSizeLimit: 20
+      supportedMimeTypes:
+        - "^image/(jpeg|gif|png|webp|heic|heif)$"
+        - "^application/pdf$"
+        - "^application/vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|presentationml\\.presentation|spreadsheetml\\.sheet)$"
+        - "^application/vnd\\.ms-(word|powerpoint|excel)$"
+    openAI:
+      disabled: true
+  serverFileSizeLimit: 1000
+  avatarSizeLimit: 2
+  fileTokenLimit: 100000
+  text:
+    supportedMimeTypes:
+      - "^text/(plain|markdown|csv|json|xml|html|css|javascript|typescript|x-python|x-java|x-csharp|x-php|x-ruby|x-go|x-rust|x-kotlin|x-swift|x-scala|x-perl|x-lua|x-shell|x-sql|x-yaml|x-toml)$"
+
+mcpSettings:
+  allowedDomains:
+    - "10.10.78.11"
+    - "10.10.78.12"
+    - "10.10.78.13"
+    - "10.10.78.14"
+    - "*.hf.space"
+    - "*.huggingface.co"

@@ -1,0 +1,376 @@
+# Default values for librechat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+global:
+  # default Secret for envs/ only Passwords. Can be locally generated with: kubectl create secret generic librechat-secret-envs --from-env-file=.env.example --dry-run=client -o yaml > secret-envs.yaml
+  # For better maintainabillity, you can put all vars directly in the config Section and only overwrite Secrets with this if nessesary.
+  # Required Values:
+  # - CREDS_KEY
+  # - CREDS_IV
+  # - JWT_SECRET
+  # - JWT_REFRESH_SECRET
+  # - MEILI_MASTER_KEY
+  librechat:
+    existingSecretName: "librechat-credentials-env"
+    # Used for Setting the Right Key, can be something like AZURE_API_KEY, if Azure OpenAI is used
+    existingSecretApiKey: OPENAI_API_KEY
+    # Optionally add extra globally accessible environment variables here. These can be referenced under ConfigEnv to make them accessible inside LibreChat
+    # env:
+    #  - name: API_KEY
+    #    valueFrom:
+    #      secretKeyRef:
+    #        name: api_access
+    #        key: api_key
+    #  - name: CLIENT_ID
+    #    valueFrom:
+    #      secretKeyRef:
+    #        name: credentials
+    #        key: client_id
+
+librechat:
+  configEnv:
+    # IMPORTANT -- GENERATE your own: openssl rand -hex 32 and openssl rand -hex 16 for CREDS_IV. Best Practise: Put into Secret. See global.librechat.existingSecretName
+    CREDS_KEY: a557da54199c72f943d736f30a774bc9c36e8b385d8f6a974ba2b684da61fbb4
+    CREDS_IV: 224b6b07d85591d39f5f9b228b4bcfd5
+    JWT_SECRET: 27da9079d2247f1fb766b5610d1c4f2fe7982542eeb0214dbef89e731594ca90
+    JWT_REFRESH_SECRET: 20f8aa1c012d63e531ebc92c9fb268cdfecd0641df40d1810193686448471851
+    ALLOW_EMAIL_LOGIN: "true"
+    ALLOW_REGISTRATION: "true"
+    ENDPOINTS: "custom,agents,assistants"
+    # Set Config Params here
+    # ENV_NAME: env-value
+
+    # existing Secret for all envs/ only Passwords. Can be locally generated with: kubectl create secret generic librechat-secret-envs --from-env-file=.env.example --dry-run=client -o yaml > secret-envs.yaml
+    # For better maintainabillity, you can put all vars directly in the config Section and only overwrite Secrets with this if nessesary.
+    # Required Values:
+    # - MEILI_MASTER_KEY
+  existingSecretName: "librechat-credentials-env"
+
+  # For adding a custom config yaml-file you can set the contents in this var. See https://www.librechat.ai/docs/configuration/librechat_yaml/example
+  # configYamlContent: ""
+  configYamlContent: |
+    version: 1.2.8
+
+    cache: true
+
+    registration:
+      socialLogins: []
+      allowedDomains:
+        - "gmail.com"
+
+    interface:
+      # MCP Servers UI configuration
+      customWelcome: "Welcome to HPE Hackathon!"
+
+      runCode: false
+      webSearch: false
+      fileSearch: false
+
+      marketplace:
+        use: false
+
+      mcpServers:
+        placeholder: "MCP Servers"
+        use: true
+        create: true
+        share: false
+        trustCheckbox:
+          label: "I trust this server"
+          subLabel: "Only enable servers you trust"
+
+      # Privacy policy settings
+      privacyPolicy:
+        externalUrl: "https://librechat.ai/privacy-policy"
+        openNewTab: true
+
+      # Terms of service
+      termsOfService:
+        externalUrl: "https://librechat.ai/tos"
+        openNewTab: true
+
+    endpoints:
+      custom:
+        - name: "Gemma 3 27b"
+          apiKey: "empty"
+          baseURL: "http://10.10.78.11:8079/v1"
+          models:
+            default: ["google/gemma-3-27b-it"]
+            fetch: true
+          titleConvo: true
+          titleModel: "current_model"
+          titleMessageRole: "user"
+          summarize: false
+          summaryModel: "current_model"
+          forcePrompt: false
+        - name: "Nemotron 3 Nano"
+          apiKey: "empty"
+          baseURL: "http://10.10.78.11:8080/v1"
+          models:
+            default: ["nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"]
+            fetch: true
+          titleConvo: true
+          titleModel: "current_model"
+          titleMessageRole: "user"
+          summarize: false
+          summaryModel: "current_model"
+          forcePrompt: false
+        - name: "Qwen 3 VL"
+          apiKey: "empty"
+          baseURL: "http://10.10.78.12:8080/v1"
+          models:
+            default: ["Qwen/Qwen3-VL-30B-A3B-Instruct-FP8"]
+            fetch: true
+          titleConvo: true
+          titleModel: "current_model"
+          titleMessageRole: "user"
+          summarize: false
+          summaryModel: "current_model"
+          forcePrompt: false
+        - name: "Qwen 3 Coder Next"
+          apiKey: "empty"
+          baseURL: "http://10.10.78.13:8080/v1"
+          models:
+            default: ["Qwen/Qwen3-Coder-Next-FP8"]
+            fetch: true
+          titleConvo: true
+          titleModel: "current_model"
+          titleMessageRole: "user"
+          summarize: false
+          summaryModel: "current_model"
+          forcePrompt: false
+      agents:
+        recursionLimit: 10
+        maxRecursionLimit: 20
+        disableBuilder: false
+        capabilities: ["actions", "tools", "artifacts", "context", "chain"]
+
+    fileConfig:
+      endpoints:
+        assistants:
+          fileLimit: 2
+          fileSizeLimit: 10
+          totalSizeLimit: 20
+          supportedMimeTypes:
+            - "^image/(jpeg|gif|png|webp|heic|heif)$"
+        openAI:
+          disabled: true
+      serverFileSizeLimit: 1000
+      avatarSizeLimit: 2
+      fileTokenLimit: 100000
+      
+    mcpSettings:
+      allowedDomains:
+        - "10.10.78.11"
+        - "10.10.78.12"
+        - "10.10.78.13"
+        - "10.10.78.14"
+        - "*.hf.space"
+        - "*.huggingface.co"
+        - "gofastmcp.com"
+        - "*.gofastmcp.com"
+        - "developers.openai.com"
+        - "docs.langchain.com"
+        - "gradio-docs-mcp.hf.space"
+
+  # name of existing Yaml configmap, key must be librechat.yaml
+  existingConfigYaml: ""
+
+  # Volume used to store image Files uploaded to the Web UI
+  imageVolume:
+    enabled: true
+    size: 10G
+    accessModes: ReadWriteOnce
+    storageClassName: nfs-client
+
+# only lite RAG is supported
+librechat-rag-api:
+  enabled: true
+  # can be azure, openai, huggingface or huggingfacetei
+  embeddingsProvider: huggingface
+
+image:
+  repository: danny-avila/librechat
+  registry: ghcr.io
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+lifecycle: {}
+# # base for adding a custom banner // see https://github.com/danny-avila/LibreChat/pull/3952 for an example
+#   postStart:
+#     exec:
+#       command: ["/bin/sh", "-c", "npm run update-banner <displayFrom(Format: yyyy-mm-ddTHH:MM:SSZ)> <displayTo(Format: yyyy-mm-ddTHH:MM:SSZ)> <message> <isPublic(true/false)>"]
+
+podAnnotations: {}
+podLabels: {}
+deploymentAnnotations: {}
+deploymentLabels: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  # readOnlyRootFilesystem: true # not supported yet
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP # LoadBalancer, NodePort, ClusterIP
+  port: 3080
+  targetPort: 3080
+  containerPort: 3080
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: "istio"
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: librechat2.kubernetes.coe.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chat.example.com
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3080
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 3080
+
+# Additional init containers on the output Deployment definition.
+initContainers: {}
+#   foo: # the name of the init container
+#     image: busybox
+#     command: ['sh', '-c', 'echo The app is starting! && sleep 5']
+#   # ... add more init containers as needed
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Host aliases for custom domain-to-IP mappings (adds entries to /etc/hosts)
+hostAliases: []
+# Example - Redirect AWS Bedrock to proxy:
+# hostAliases:
+#   - ip: "10.1.2.3"
+#     hostnames:
+#       - "bedrock-runtime.eu-central-1.amazonaws.com"
+
+# DNS Configuration
+# Customize DNS resolution for redirecting traffic to proxy servers
+dnsPolicy: "" # Options: ClusterFirst, Default, None, ClusterFirstWithHostNet
+dnsConfig: {}
+# Example configuration for custom DNS:
+# dnsPolicy: "None"  # Use only custom DNS settings
+# dnsConfig:
+#   nameservers:
+#     - "10.0.0.10"  # Your custom DNS server
+#     - "8.8.8.8"    # Fallback DNS
+#   searches:
+#     - "svc.cluster.local"
+#     - "cluster.local"
+#   options:
+#     - name: ndots
+#       value: "2"
+#     - name: timeout
+#       value: "1"
+
+# Strategy for LibreChat deployment updates
+updateStrategy:
+  type: RollingUpdate
+
+# Extra ConfigMaps to be created alongside the main ones
+additionalConfigMaps: {}
+#   custom: # suffix of the ConfigMap name
+#     labels: {}
+#     annotations: {}
+#     data: {}
+#     binaryData: {}
+#     immutable: false
+#   # ... add more ConfigMaps as needed
+
+# MongoDB Parameters
+mongodb:
+  enabled: true
+  auth:
+    enabled: false
+  databases:
+    - LibreChat
+#  persistence:
+#    size: 8Gi
+
+meilisearch:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClass: ""
+  image:
+    tag: "v1.7.3"
+  auth:
+    # Use an existing Kubernetes secret for the MEILI_MASTER_KEY
+    existingMasterKeySecret: "librechat-credentials-env"
