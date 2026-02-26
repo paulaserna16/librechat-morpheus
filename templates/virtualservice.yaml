@@ -1,0 +1,23 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ .Values.istio.virtualService.name }}
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+spec:
+  hosts:
+    {{- toYaml .Values.istio.gateway.hosts | nindent 4 }}
+  gateways:
+    - {{ .Values.istio.gateway.name }}
+  http:
+    - headers:
+        response:
+          set:
+            Content-Security-Policy: {{ .Values.istio.virtualService.cspHeader | quote }}
+      route:
+        - destination:
+            host: {{ include "librechat.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}
+{{- end }}

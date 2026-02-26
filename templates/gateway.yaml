@@ -1,0 +1,35 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.istio.gateway.name }}
+  labels:
+    {{- include "librechat.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- toYaml .Values.istio.gateway.selector | nindent 4 }}
+  servers:
+    {{- if .Values.istio.gateway.https.enabled }}
+    - hosts:
+        {{- toYaml .Values.istio.gateway.hosts | nindent 8 }}
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: {{ .Values.istio.gateway.https.credentialName }}
+    {{- end }}
+    {{- if .Values.istio.gateway.http.enabled }}
+    - hosts:
+        {{- toYaml .Values.istio.gateway.hosts | nindent 8 }}
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+      {{- if .Values.istio.gateway.http.redirectToHttps }}
+      tls:
+        httpsRedirect: true
+      {{- end }}
+    {{- end }}
+{{- end }}

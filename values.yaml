@@ -259,6 +259,24 @@ ingress:
   #    hosts:
   #      - chat.example.com
 
+istio:
+  enabled: false
+  gateway:
+    name: librechat-gateway
+    selector:
+      istio: ingressgateway
+    hosts:
+      - librechat2.kubernetes.coe.local
+    http:
+      enabled: true
+      redirectToHttps: true
+    https:
+      enabled: true
+      credentialName: librechat-tls
+  virtualService:
+    name: librechat-csp
+    cspHeader: "frame-src 'self' https://*.codesandbox.io"
+
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
