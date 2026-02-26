@@ -76,3 +76,10 @@ Define apiVersion of HorizontalPodAutoscaler
 {{- print "autoscaling/v2beta1" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Resolve namespace for namespaced resources
+*/}}
+{{- define "librechat.namespace" -}}
+{{- default .Release.Namespace .Values.namespaceOverride | lower -}}
+{{- end -}}
