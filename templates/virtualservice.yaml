@@ -3,7 +3,6 @@ apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: {{ .Values.istio.virtualService.name }}
-  namespace: {{ include "librechat.namespace" . }}
   labels:
     {{- include "librechat.labels" . | nindent 4 }}
 spec:
